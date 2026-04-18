@@ -1,0 +1,47 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Backend (Spring Boot)",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "mainClass": "com.example.todo.TodoApplication",
+      "projectName": "todo-backend"
+    },
+    {
+      "type": "chrome",
+      "name": "Frontend (Vite + Chrome)",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/frontend/*"
+      },
+      "preLaunchTask": "vite: dev"
+    },
+    {
+      "type": "node",
+      "name": "Frontend (Vite dev server)",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Backend + Frontend)",
+      "configurations": [
+        "Backend (Spring Boot)",
+        "Frontend (Vite dev server)"
+      ],
+      "stopAll": true
+    }
+  ]
+}
