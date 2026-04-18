@@ -1,0 +1,56 @@
+#!/bin/sh
+# Maven Wrapper script for Unix/Mac/Linux/Git Bash
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+
+set -e
+
+MAVEN_WRAPPER_JAR=".mvn/wrapper/maven-wrapper.jar"
+MAVEN_WRAPPER_PROPERTIES=".mvn/wrapper/maven-wrapper.properties"
+
+# Determine the location of this script
+SCRIPT="$0"
+while [ -h "$SCRIPT" ]; do
+  ls=$(ls -ld "$SCRIPT")
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '/.*' > /dev/null; then
+    SCRIPT="$link"
+  else
+    SCRIPT="$(dirname "$SCRIPT")/$link"
+  fi
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT")" && pwd)"
+
+# Read distribution URL from properties file
+DISTRIBUTION_URL=$(grep -E '^distributionUrl=' "$SCRIPT_DIR/$MAVEN_WRAPPER_PROPERTIES" | sed 's/distributionUrl=//' | tr -d '\r')
+
+if [ -z "$DISTRIBUTION_URL" ]; then
+  echo "No distributionUrl found in $MAVEN_WRAPPER_PROPERTIES"
+  exit 1
+fi
+
+# Determine Maven home from URL
+MAVEN_VERSION=$(echo "$DISTRIBUTION_URL" | sed 's/.*apache-maven-\(.*\)-bin.zip/\1/')
+MAVEN_HOME="$HOME/.m2/wrapper/dists/apache-maven-${MAVEN_VERSION}-bin"
+MAVEN_BIN="$MAVEN_HOME/apache-maven-${MAVEN_VERSION}/bin/mvn"
+
+# Download if not present
+if [ ! -f "$MAVEN_BIN" ]; then
+  echo "Downloading Maven $MAVEN_VERSION..."
+  mkdir -p "$MAVEN_HOME"
+  TMP_ZIP="$MAVEN_HOME/maven.zip"
+
+  if command -v curl > /dev/null 2>&1; then
+    curl -fsSL "$DISTRIBUTION_URL" -o "$TMP_ZIP"
+  elif command -v wget > /dev/null 2>&1; then
+    wget -q "$DISTRIBUTION_URL" -O "$TMP_ZIP"
+  else
+    echo "Neither curl nor wget found. Please install Maven manually."
+    exit 1
+  fi
+
+  unzip -q "$TMP_ZIP" -d "$MAVEN_HOME"
+  rm "$TMP_ZIP"
+  echo "Maven $MAVEN_VERSION installed."
+fi
+
+exec "$MAVEN_BIN" "$@"
