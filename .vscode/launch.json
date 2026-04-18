@@ -7,9 +7,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
       "mainClass": "com.example.todo.TodoApplication",
-      "projectName": "todo-backend",
-      "args": [],
-      "envFile": "${workspaceFolder}/backend/.env"
+      "projectName": "todo-backend"
     },
     {
       "type": "chrome",
@@ -24,13 +22,16 @@
     },
     {
       "type": "node",
-      "name": "Frontend (Vite Node debugger)",
+      "name": "Frontend (Vite dev server)",
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "cwd": "${workspaceFolder}/frontend",
       "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": ["<node_internals>/**"],
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      }
     }
   ],
   "compounds": [
@@ -38,7 +39,7 @@
       "name": "Full Stack (Backend + Frontend)",
       "configurations": [
         "Backend (Spring Boot)",
-        "Frontend (Vite Node debugger)"
+        "Frontend (Vite dev server)"
       ],
       "stopAll": true
     }

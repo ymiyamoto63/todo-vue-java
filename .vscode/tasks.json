@@ -4,7 +4,8 @@
     {
       "label": "vite: dev",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "npm.cmd",
+      "args": ["run", "dev"],
       "options": {
         "cwd": "${workspaceFolder}/frontend"
       },
@@ -12,20 +13,22 @@
       "problemMatcher": {
         "owner": "vite",
         "pattern": {
-          "regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning):\\s+(.*)$",
+          "regexp": "^$",
           "file": 1,
           "line": 2,
-          "column": 3,
-          "severity": 4,
-          "message": 5
+          "message": 3
         },
         "background": {
           "activeOnStart": true,
           "beginsPattern": "VITE",
-          "endsPattern": "ready in"
+          "endsPattern": "Local:.*http"
         }
       },
-      "group": "build"
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     }
   ]
 }
