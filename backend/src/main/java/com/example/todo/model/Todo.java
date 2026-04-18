@@ -1,13 +1,26 @@
 package com.example.todo.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
+@Schema(description = "TODOエンティティ")
 public class Todo {
+    @Schema(description = "ID", example = "1")
     private Long id;
+
+    @Schema(description = "タイトル", example = "買い物をする")
     private String title;
+
+    @Schema(description = "説明", example = "牛乳・卵・パンを買う")
     private String description;
+
+    @Schema(description = "完了フラグ", example = "false")
     private boolean completed;
+
+    @Schema(description = "作成日時")
     private LocalDateTime createdAt;
+
+    @Schema(description = "更新日時")
     private LocalDateTime updatedAt;
 
     public Todo() {}

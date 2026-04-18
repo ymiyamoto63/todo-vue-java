@@ -14,7 +14,13 @@
       "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
       "Bash(java --version)",
       "Bash(\"/c/Program Files/Java/jdk-26/bin/java.exe\" --version)",
-      "Bash(xargs basename *)"
+      "Bash(xargs basename *)",
+      "Bash(./mvnw.cmd -q package -DskipTests)",
+      "Bash(./mvnw.cmd -q spring-boot:run)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s http://localhost:8080/v3/api-docs)",
+      "WebSearch",
+      "WebFetch(domain:orval.dev)"
     ]
   }
 }

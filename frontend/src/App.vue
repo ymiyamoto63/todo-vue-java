@@ -95,7 +95,7 @@ function openEdit(todo: Todo) {
 async function onSave(fields: TodoRequest) {
   try {
     if (editingTodo.value) {
-      await store.update(editingTodo.value.id, fields)
+      await store.update(editingTodo.value.id!, fields)
       notify('更新しました')
     } else {
       await store.create(fields)
@@ -116,7 +116,7 @@ async function toggle(todo: Todo) {
 
 async function remove(todo: Todo) {
   try {
-    await store.remove(todo.id)
+    await store.remove(todo.id!)
     notify('削除しました')
   } catch {
     notify('削除に失敗しました', 'error')

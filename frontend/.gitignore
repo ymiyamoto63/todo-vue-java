@@ -25,5 +25,3 @@ src/generated/
 *.njsproj
 *.sln
 *.sw?
-
-backend/target/

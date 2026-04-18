@@ -1,17 +1,8 @@
-// Backend の Todo モデル / TodoRequest DTO に対応する型定義。
-// npm run generate:api 実行後は src/generated/api からインポートするよう更新できる。
+// openapi-typescript で生成した src/generated/api.ts からの再エクスポート。
+// 型の単一ソースは generated/api.ts であり、このファイルは直接編集しない。
+// Backend 変更時は npm run generate:api を再実行すること。
 
-export interface Todo {
-  id: number
-  title: string
-  description?: string
-  completed: boolean
-  createdAt: string
-  updatedAt: string
-}
+import type { components } from '../generated/api'
 
-export interface TodoRequest {
-  title: string
-  description?: string
-  completed?: boolean
-}
+export type Todo = components['schemas']['Todo']
+export type TodoRequest = components['schemas']['TodoRequest']

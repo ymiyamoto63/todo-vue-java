@@ -36,7 +36,7 @@ export const useTodoStore = defineStore('todo', () => {
   }
 
   async function toggle(todo: Todo) {
-    const { data } = await todoApi.toggle(todo.id)
+    const { data } = await todoApi.toggle(todo.id!)
     const idx = todos.value.findIndex(t => t.id === data.id)
     if (idx !== -1) todos.value[idx] = data
   }
