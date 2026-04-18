@@ -21,6 +21,10 @@ Backend (Java/Spring Boot)
         ▼
 http://localhost:8080/v3/api-docs  (OpenAPI JSON)
         │
+        │ npm run export:api  ← バックエンド起動中に実行し openapi.json を更新
+        ▼
+openapi.json                       (リポジトリにコミット)
+        │
         │ npm run generate:api
         │ (openapi-typescript)
         ▼
@@ -41,20 +45,33 @@ frontend/src/api/todos.ts          (axios で HTTP 呼び出し、型付き)
 |---|---|---|
 | Backend | `backend/.../model/Todo.java` | `@Schema` アノテーションで型情報を定義 |
 | Backend | `backend/.../controller/TodoController.java` | `@Operation`/`@ApiResponse` でエンドポイントを文書化 |
-| 自動生成 | `frontend/src/generated/api.ts` | OpenAPI JSON から `openapi-typescript` が生成。**直接編集禁止** |
+| スキーマ | `openapi.json` | バックエンド起動中に `export:api` で更新。リポジトリにコミット |
+| 自動生成 | `frontend/src/generated/api.ts` | `openapi.json` から `openapi-typescript` が生成。**直接編集禁止** |
 | 型ラッパー | `frontend/src/types/todo.ts` | `generated/api.ts` から `Todo`/`TodoRequest` を再エクスポート |
 | API クライアント | `frontend/src/api/todos.ts` | axios + 上記型でリクエスト関数を定義 |
 
 ### 型の更新手順
 
-バックエンドのモデルを変更したら、バックエンドを起動した状態で以下を実行します。
+バックエンドのモデルを変更したら、スクリプトを実行します。
 
 ```bash
+./update-api-types.sh
+```
+
+バックエンドが未起動の場合は自動で起動・待機・終了します。起動済みの場合はそのまま利用します。
+
+手動で実行する場合は以下の手順です。
+
+```bash
+# 1. バックエンドを起動した状態で openapi.json を更新
 cd frontend
+npm run export:api   # → ../openapi.json を上書き
+
+# 2. openapi.json から TypeScript 型を再生成（バックエンド不要）
 npm run generate:api
 ```
 
-`http://localhost:8080/v3/api-docs` から最新の OpenAPI 定義を取得し `src/generated/api.ts` を再生成します。型の不一致はコンパイルエラーとして検出できます。
+`openapi.json` はリポジトリにコミットするため、**型生成だけなら `npm run generate:api` のみ**でバックエンドなしで実行できます。型の不一致はコンパイルエラーとして検出できます。
 
 ## 起動方法
 

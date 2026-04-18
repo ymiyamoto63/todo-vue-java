@@ -8,7 +8,8 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
-    "generate:api": "openapi-typescript http://localhost:8080/v3/api-docs -o src/generated/api.ts"
+    "export:api": "curl http://localhost:8080/v3/api-docs -o ../openapi.json",
+    "generate:api": "openapi-typescript ../openapi.json -o src/generated/api.ts"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
