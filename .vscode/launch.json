@@ -7,7 +7,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
       "mainClass": "com.example.todo.TodoApplication",
-      "projectName": "todo-backend"
+      "projectName": "com.example-todo-backend"
     },
     {
       "type": "chrome",
