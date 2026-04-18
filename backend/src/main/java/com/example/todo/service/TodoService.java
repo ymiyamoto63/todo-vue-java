@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.TodoRequest;
+import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.springframework.stereotype.Service;
@@ -17,34 +18,39 @@ public class TodoService {
         this.repository = repository;
     }
 
-    public List<Todo> findAll() {
-        return repository.findAll();
+    public List<TodoResponse> findAll() {
+        return repository.findAll().stream()
+                .map(TodoResponse::from)
+                .toList();
     }
 
-    public Todo findById(Long id) {
-        return repository.findById(id)
+    public TodoResponse findById(Long id) {
+        Todo todo = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Todo not found: " + id));
+        return TodoResponse.from(todo);
     }
 
-    public Todo create(TodoRequest request) {
+    public TodoResponse create(TodoRequest request) {
         Todo todo = new Todo(null, request.getTitle(), request.getDescription());
-        return repository.save(todo);
+        return TodoResponse.from(repository.save(todo));
     }
 
-    public Todo update(Long id, TodoRequest request) {
-        Todo todo = findById(id);
+    public TodoResponse update(Long id, TodoRequest request) {
+        Todo todo = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Todo not found: " + id));
         todo.setTitle(request.getTitle());
         todo.setDescription(request.getDescription());
         todo.setCompleted(request.isCompleted());
         todo.setUpdatedAt(LocalDateTime.now());
-        return repository.save(todo);
+        return TodoResponse.from(repository.save(todo));
     }
 
-    public Todo toggleComplete(Long id) {
-        Todo todo = findById(id);
+    public TodoResponse toggleComplete(Long id) {
+        Todo todo = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Todo not found: " + id));
         todo.setCompleted(!todo.isCompleted());
         todo.setUpdatedAt(LocalDateTime.now());
-        return repository.save(todo);
+        return TodoResponse.from(repository.save(todo));
     }
 
     public void delete(Long id) {

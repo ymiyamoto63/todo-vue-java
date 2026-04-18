@@ -1,7 +1,7 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.TodoRequest;
-import com.example.todo.model.Todo;
+import com.example.todo.dto.TodoResponse;
 import com.example.todo.service.TodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+
 
 @Tag(name = "Todo", description = "TODO管理API")
 @RestController
@@ -30,7 +31,7 @@ public class TodoController {
     @Operation(summary = "TODO一覧取得", description = "登録されている全TODOを取得する")
     @ApiResponse(responseCode = "200", description = "取得成功")
     @GetMapping
-    public List<Todo> getAll() {
+    public List<TodoResponse> getAll() {
         return service.findAll();
     }
 
@@ -40,7 +41,7 @@ public class TodoController {
         @ApiResponse(responseCode = "404", description = "TODOが存在しない"),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Todo> getById(
+    public ResponseEntity<TodoResponse> getById(
             @Parameter(description = "TODO ID", required = true) @PathVariable Long id) {
         try {
             return ResponseEntity.ok(service.findById(id));
@@ -55,8 +56,8 @@ public class TodoController {
         @ApiResponse(responseCode = "400", description = "バリデーションエラー"),
     })
     @PostMapping
-    public ResponseEntity<Todo> create(@Valid @RequestBody TodoRequest request) {
-        Todo created = service.create(request);
+    public ResponseEntity<TodoResponse> create(@Valid @RequestBody TodoRequest request) {
+        TodoResponse created = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -67,7 +68,7 @@ public class TodoController {
         @ApiResponse(responseCode = "404", description = "TODOが存在しない"),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> update(
+    public ResponseEntity<TodoResponse> update(
             @Parameter(description = "TODO ID", required = true) @PathVariable Long id,
             @Valid @RequestBody TodoRequest request) {
         try {
@@ -83,7 +84,7 @@ public class TodoController {
         @ApiResponse(responseCode = "404", description = "TODOが存在しない"),
     })
     @PatchMapping("/{id}/toggle")
-    public ResponseEntity<Todo> toggleComplete(
+    public ResponseEntity<TodoResponse> toggleComplete(
             @Parameter(description = "TODO ID", required = true) @PathVariable Long id) {
         try {
             return ResponseEntity.ok(service.toggleComplete(id));
