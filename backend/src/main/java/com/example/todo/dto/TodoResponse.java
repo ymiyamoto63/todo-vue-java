@@ -1,6 +1,6 @@
 package com.example.todo.dto;
 
-import com.example.todo.model.Todo;
+import com.example.todo.domain.entity.Todo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -27,9 +27,9 @@ public class TodoResponse {
 
     public static TodoResponse from(Todo todo) {
         TodoResponse response = new TodoResponse();
-        response.id = todo.getId();
-        response.title = todo.getTitle();
-        response.description = todo.getDescription();
+        response.id = todo.getId().getValue();
+        response.title = todo.getTitle().getValue();
+        response.description = todo.getDescription() != null ? todo.getDescription().getValue() : null;
         response.completed = todo.isCompleted();
         response.createdAt = todo.getCreatedAt();
         response.updatedAt = todo.getUpdatedAt();

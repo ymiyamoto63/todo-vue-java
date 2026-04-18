@@ -2,7 +2,7 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.TodoRequest;
 import com.example.todo.dto.TodoResponse;
-import com.example.todo.service.TodoService;
+import com.example.todo.application.service.TodoApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,9 +22,9 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/todos")
 @CrossOrigin(origins = "*")
 public class TodoController {
-    private final TodoService service;
+    private final TodoApplicationService service;
 
-    public TodoController(TodoService service) {
+    public TodoController(TodoApplicationService service) {
         this.service = service;
     }
 
