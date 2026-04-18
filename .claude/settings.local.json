@@ -20,7 +20,9 @@
       "Bash(echo \"PID: $!\")",
       "Bash(curl -s http://localhost:8080/v3/api-docs)",
       "WebSearch",
-      "WebFetch(domain:orval.dev)"
+      "WebFetch(domain:orval.dev)",
+      "WebFetch(domain:springdoc.org)",
+      "WebFetch(domain:heyapi.dev)"
     ]
   }
 }
