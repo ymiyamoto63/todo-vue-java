@@ -49,7 +49,12 @@
       "Bash(/c/Windows/System32/taskkill.exe //PID 2896 //F)",
       "Bash(bash update-api-types.sh)",
       "Bash(export PATH=\"/c/Users/miyam/AppData/Local/nvm/v22.14.0:$PATH\")",
-      "Bash(./mvnw compile *)"
+      "Bash(./mvnw compile *)",
+      "Bash(/c/Windows/System32/taskkill.exe //PID 12052 //F)",
+      "Bash(xargs /c/Windows/System32/taskkill.exe //PID //F sleep 2 ./mvnw package -q -DskipTests)",
+      "Bash(./mvnw package *)",
+      "Bash(/c/Windows/System32/taskkill.exe //F //IM java.exe)",
+      "Bash(break sleep *)"
     ]
   }
 }
