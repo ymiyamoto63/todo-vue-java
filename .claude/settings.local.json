@@ -48,7 +48,8 @@
       "Bash(/c/Windows/System32/taskkill.exe /PID 2896 /F)",
       "Bash(/c/Windows/System32/taskkill.exe //PID 2896 //F)",
       "Bash(bash update-api-types.sh)",
-      "Bash(export PATH=\"/c/Users/miyam/AppData/Local/nvm/v22.14.0:$PATH\")"
+      "Bash(export PATH=\"/c/Users/miyam/AppData/Local/nvm/v22.14.0:$PATH\")",
+      "Bash(./mvnw compile *)"
     ]
   }
 }
