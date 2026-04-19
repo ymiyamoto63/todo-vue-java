@@ -2,6 +2,7 @@ package com.example.todo.application.service;
 
 import com.example.todo.domain.entity.Project;
 import com.example.todo.domain.repository.ProjectRepository;
+import com.example.todo.domain.valueobject.DueDate;
 import com.example.todo.domain.valueobject.ProjectId;
 import com.example.todo.domain.valueobject.ProjectName;
 import com.example.todo.domain.valueobject.TodoDescription;
@@ -11,6 +12,7 @@ import com.example.todo.dto.ProjectRequest;
 import com.example.todo.dto.ProjectResponse;
 import com.example.todo.dto.TodoRequest;
 import com.example.todo.dto.TodoResponse;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +22,11 @@ import java.util.NoSuchElementException;
 public class ProjectApplicationService {
 
     private final ProjectRepository repository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProjectApplicationService(ProjectRepository repository) {
+    public ProjectApplicationService(ProjectRepository repository, ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<ProjectResponse> findAll() {
@@ -49,10 +53,13 @@ public class ProjectApplicationService {
     public TodoResponse addTodo(Long projectId, TodoRequest request) {
         Project project = findProjectById(projectId);
 
+        DueDate dueDate = request.getDueDate() != null ? new DueDate(request.getDueDate()) : null;
+
         // Todo の追加は Project を経由する（集約のルール）
         var todo = project.addTodo(
                 new TodoTitle(request.getTitle()),
-                new TodoDescription(request.getDescription())
+                new TodoDescription(request.getDescription()),
+                dueDate
         );
         repository.save(project);
         return TodoResponse.from(todo);
@@ -68,6 +75,10 @@ public class ProjectApplicationService {
         Project project = findProjectById(projectId);
         project.toggleTodo(new TodoId(todoId));
         repository.save(project);
+
+        // save後にドメインイベントを取り出して発行する
+        project.pullDomainEvents().forEach(eventPublisher::publishEvent);
+
         return project.getTodos().stream()
                 .filter(t -> new TodoId(todoId).equals(t.getId()))
                 .map(TodoResponse::from)

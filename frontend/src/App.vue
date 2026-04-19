@@ -84,8 +84,18 @@
                     <v-list-item-title :class="{ 'text-decoration-line-through': todo.completed }">
                       {{ todo.title }}
                     </v-list-item-title>
-                    <v-list-item-subtitle v-if="todo.description">
-                      {{ todo.description }}
+                    <v-list-item-subtitle>
+                      <span v-if="todo.description">{{ todo.description }}</span>
+                      <v-chip
+                        v-if="todo.dueDate"
+                        :color="todo.overdue ? 'error' : 'default'"
+                        size="x-small"
+                        :prepend-icon="todo.overdue ? 'mdi-alert-circle' : 'mdi-calendar'"
+                        class="ml-1"
+                        variant="tonal"
+                      >
+                        {{ todo.dueDate }}
+                      </v-chip>
                     </v-list-item-subtitle>
                     <template #append>
                       <v-btn

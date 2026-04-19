@@ -16,6 +16,12 @@
             label="説明"
             rows="3"
           />
+          <v-text-field
+            v-model="fields.dueDate"
+            label="締め切り日"
+            type="date"
+            clearable
+          />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -54,6 +60,7 @@ watch(() => props.modelValue, (open) => {
     fields.value = {
       title: props.todo?.title ?? '',
       description: props.todo?.description ?? '',
+      dueDate: props.todo?.dueDate ?? undefined,
     }
   }
 })
@@ -61,7 +68,11 @@ watch(() => props.modelValue, (open) => {
 async function submit() {
   const { valid } = await form.value!.validate()
   if (!valid) return
-  emit('save', { ...fields.value })
+  const payload: TodoRequest = {
+    ...fields.value,
+    dueDate: fields.value.dueDate || undefined,
+  }
+  emit('save', payload)
   dialog.value = false
 }
 </script>

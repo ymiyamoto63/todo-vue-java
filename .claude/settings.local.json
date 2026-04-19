@@ -54,7 +54,8 @@
       "Bash(xargs /c/Windows/System32/taskkill.exe //PID //F sleep 2 ./mvnw package -q -DskipTests)",
       "Bash(./mvnw package *)",
       "Bash(/c/Windows/System32/taskkill.exe //F //IM java.exe)",
-      "Bash(break sleep *)"
+      "Bash(break sleep *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['components']['schemas']['TodoResponse'], indent=2\\)\\)\")"
     ]
   }
 }

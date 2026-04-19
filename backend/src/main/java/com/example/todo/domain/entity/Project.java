@@ -1,5 +1,9 @@
 package com.example.todo.domain.entity;
 
+import com.example.todo.domain.event.AllTodosCompletedEvent;
+import com.example.todo.domain.event.DomainEvent;
+import com.example.todo.domain.event.TodoCompletedEvent;
+import com.example.todo.domain.valueobject.DueDate;
 import com.example.todo.domain.valueobject.ProjectId;
 import com.example.todo.domain.valueobject.ProjectName;
 import com.example.todo.domain.valueobject.TodoDescription;
@@ -18,6 +22,9 @@ public class Project {
     private ProjectName name;
     private final List<Todo> todos;
 
+    // ドメインイベントを一時的に蓄積するリスト（永続化対象外）
+    private final List<DomainEvent> domainEvents = new ArrayList<>();
+
     // 新規作成用
     public Project(ProjectName name) {
         this.name = name;
@@ -34,8 +41,8 @@ public class Project {
     // --- ドメインロジック ---
 
     // Todo の追加は必ず Project を通す
-    public Todo addTodo(TodoTitle title, TodoDescription description) {
-        Todo todo = new Todo(title, description);
+    public Todo addTodo(TodoTitle title, TodoDescription description, DueDate dueDate) {
+        Todo todo = new Todo(title, description, dueDate);
         todos.add(todo);
         return todo;
     }
@@ -48,7 +55,14 @@ public class Project {
     }
 
     public void completeTodo(TodoId todoId) {
-        findTodo(todoId).complete();
+        Todo todo = findTodo(todoId);
+        todo.complete();
+        domainEvents.add(new TodoCompletedEvent(id, todo.getId(), todo.getTitle()));
+
+        // 全Todoが完了したらプロジェクト完了イベントを発行
+        if (!todos.isEmpty() && todos.stream().allMatch(Todo::isCompleted)) {
+            domainEvents.add(new AllTodosCompletedEvent(id, name, todos.size()));
+        }
     }
 
     public void reopenTodo(TodoId todoId) {
@@ -56,7 +70,12 @@ public class Project {
     }
 
     public void toggleTodo(TodoId todoId) {
-        findTodo(todoId).toggleComplete();
+        Todo todo = findTodo(todoId);
+        if (todo.isCompleted()) {
+            todo.reopen();
+        } else {
+            completeTodo(todoId); // イベント発行を含むcompleteTodoを使う
+        }
     }
 
     public void changeName(ProjectName newName) {
@@ -88,6 +107,13 @@ public class Project {
     // 外部には読み取り専用リストを返す（内部リストを直接渡さない）
     public List<Todo> getTodos() {
         return Collections.unmodifiableList(todos);
+    }
+
+    // Application Service がイベントを取り出して発行する（取り出したらクリア）
+    public List<DomainEvent> pullDomainEvents() {
+        List<DomainEvent> events = new ArrayList<>(domainEvents);
+        domainEvents.clear();
+        return events;
     }
 
     // --- private ---

@@ -3,6 +3,7 @@ package com.example.todo.dto;
 import com.example.todo.domain.entity.Todo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Schema(description = "TODOレスポンス")
@@ -16,8 +17,14 @@ public class TodoResponse {
     @Schema(description = "説明", example = "牛乳・卵・パンを買う")
     private String description;
 
+    @Schema(description = "締め切り日", example = "2026-04-30")
+    private LocalDate dueDate;
+
     @Schema(description = "完了フラグ", example = "false")
     private boolean completed;
+
+    @Schema(description = "期限切れフラグ", example = "false")
+    private boolean overdue;
 
     @Schema(description = "作成日時")
     private LocalDateTime createdAt;
@@ -30,7 +37,9 @@ public class TodoResponse {
         response.id = todo.getId().getValue();
         response.title = todo.getTitle().getValue();
         response.description = todo.getDescription() != null ? todo.getDescription().getValue() : null;
+        response.dueDate = todo.getDueDate() != null ? todo.getDueDate().getValue() : null;
         response.completed = todo.isCompleted();
+        response.overdue = todo.isOverdue();
         response.createdAt = todo.getCreatedAt();
         response.updatedAt = todo.getUpdatedAt();
         return response;
@@ -39,7 +48,9 @@ public class TodoResponse {
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
+    public LocalDate getDueDate() { return dueDate; }
     public boolean isCompleted() { return completed; }
+    public boolean isOverdue() { return overdue; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

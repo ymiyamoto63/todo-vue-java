@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
+
 @Schema(description = "TODO作成・更新リクエスト")
 public class TodoRequest {
     @Schema(description = "タイトル", example = "買い物をする", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -15,6 +17,9 @@ public class TodoRequest {
     @Size(max = 1000, message = "説明は1000文字以内で入力してください")
     private String description;
 
+    @Schema(description = "締め切り日", example = "2026-04-30")
+    private LocalDate dueDate;
+
     @Schema(description = "完了フラグ", example = "false")
     private boolean completed;
 
@@ -23,6 +28,9 @@ public class TodoRequest {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public LocalDate getDueDate() { return dueDate; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }

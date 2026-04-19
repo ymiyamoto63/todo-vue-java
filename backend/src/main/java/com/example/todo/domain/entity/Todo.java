@@ -1,5 +1,6 @@
 package com.example.todo.domain.entity;
 
+import com.example.todo.domain.valueobject.DueDate;
 import com.example.todo.domain.valueobject.TodoDescription;
 import com.example.todo.domain.valueobject.TodoId;
 import com.example.todo.domain.valueobject.TodoTitle;
@@ -12,25 +13,28 @@ public class Todo {
     private TodoId id;
     private TodoTitle title;
     private TodoDescription description;
+    private DueDate dueDate;
     private boolean completed;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     // 新規作成用（IDはまだない）
-    public Todo(TodoTitle title, TodoDescription description) {
+    public Todo(TodoTitle title, TodoDescription description, DueDate dueDate) {
         this.title = title;
         this.description = description;
+        this.dueDate = dueDate;
         this.completed = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     // Repository が永続化済みデータを復元するためのコンストラクタ
-    public Todo(TodoId id, TodoTitle title, TodoDescription description,
+    public Todo(TodoId id, TodoTitle title, TodoDescription description, DueDate dueDate,
                 boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.dueDate = dueDate;
         this.completed = completed;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -94,7 +98,9 @@ public class Todo {
 
     public TodoTitle getTitle() { return title; }
     public TodoDescription getDescription() { return description; }
+    public DueDate getDueDate() { return dueDate; }
     public boolean isCompleted() { return completed; }
+    public boolean isOverdue() { return dueDate != null && !completed && dueDate.isOverdue(); }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
