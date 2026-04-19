@@ -118,33 +118,56 @@ project.toggleTodo(todoId); // Project が内部の Todo を探して操作
 ドメインがインフラの詳細（DB・インメモリ等）に依存しないようにする。
 
 ```
-domain/repository/TodoRepository.java        ← interface（ドメイン層）
-infrastructure/repository/InMemoryTodoRepository.java ← 実装（インフラ層）
+domain/repository/ProjectRepository.java              ← interface（ドメイン層）
+infrastructure/repository/InMemoryProjectRepository.java ← 実装（インフラ層）
 ```
 
 ```java
 // Service はインターフェースだけを知る
 // → DB に切り替えても Service は一切変更不要
-public class TodoApplicationService {
-    private final TodoRepository repository; // interface
+public class ProjectApplicationService {
+    private final ProjectRepository repository; // interface
 }
+```
+
+**子 Entity（Todo）専用の Repository は作らない**
+
+```java
+// NG: Todo を直接リポジトリで管理する
+public interface TodoRepository { ... } // 集約の境界を壊す
+
+// OK: 集約単位（Project）だけ Repository を持つ
+public interface ProjectRepository { ... }
 ```
 
 ---
 
 ### Application Service（アプリケーションサービス）
 
-ユースケースの調整役。Entity のメソッドを呼び出し、Repository を通じて永続化する。  
+ユースケースの調整役。Aggregate Root のメソッドを呼び出し、Repository を通じて永続化する。  
 ビジネスロジック自体は持たない（それは Entity の責務）。
 
 ```java
-public TodoResponse update(Long id, TodoRequest request) {
-    Todo todo = findTodoById(id);
-    todo.changeTitle(new TodoTitle(request.getTitle())); // Entity に委譲
-    todo.changeDescription(new TodoDescription(request.getDescription()));
-    return TodoResponse.from(repository.save(todo));
+// ProjectApplicationService
+public TodoResponse addTodo(Long projectId, TodoRequest request) {
+    Project project = findProjectById(projectId);
+    project.addTodo(                              // Aggregate Root に委譲
+        new TodoTitle(request.getTitle()),
+        new TodoDescription(request.getDescription())
+    );
+    repository.save(project);                     // Project ごと保存
+}
+
+public TodoResponse toggleTodo(Long projectId, Long todoId) {
+    Project project = findProjectById(projectId);
+    project.toggleTodo(new TodoId(todoId));       // Project が Todo を探して操作
+    repository.save(project);
 }
 ```
+
+**Application Service が持つべきでないもの**
+- ビジネスルールの判断（例：完了済みかどうかのチェック → Entity の責務）
+- 子 Entity への直接アクセス（必ず Aggregate Root 経由）
 
 ---
 
