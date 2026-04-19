@@ -62,13 +62,33 @@ todo.complete();  // updatedAt の更新も内部で行う
 **ルール**
 - 外部は必ず Aggregate Root を経由してアクセスする
 - 集約内部のオブジェクトに直接触ってはいけない
+- Repository は集約単位で保存する（子 Entity の Repository を別に作らない）
+
+```
+Project（Aggregate Root）
+    ├── ProjectId    (Value Object)
+    ├── ProjectName  (Value Object)
+    └── List<Todo>   ← Project を通してのみ追加・削除できる
+```
+
+**Todo の追加は必ず Project 経由**
 
 ```java
-// NG: 集約内部に直接触る
-todo.getTitle().setValue("掃除");
+// NG: Todo を直接リポジトリで保存
+todoRepository.save(todo);
 
 // OK: Aggregate Root を通す
-todo.changeTitle(new TodoTitle("掃除"));
+project.addTodo(title, description);
+projectRepository.save(project); // Project ごと保存
+```
+
+**外部には読み取り専用リストを返す**
+
+```java
+// Project.java
+public List<Todo> getTodos() {
+    return Collections.unmodifiableList(todos); // 外から add() できないよう守る
+}
 ```
 
 **一貫性の強制例**
@@ -82,7 +102,13 @@ public void changeTitle(TodoTitle newTitle) {
 }
 ```
 
-**このアプリでの集約**: `Todo` が Aggregate Root かつ唯一の Entity
+**複数 Entity を持つ集約の例（このアプリ）**
+
+```
+// Project が Aggregate Root、Todo が子 Entity
+project.toggleTodo(todoId); // Project が内部の Todo を探して操作
+// → TodoRepository は不要。ProjectRepository だけで集約全体を管理する
+```
 
 ---
 

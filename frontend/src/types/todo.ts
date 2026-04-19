@@ -4,5 +4,7 @@
 
 import type { components } from '../generated/api'
 
-export type Todo = components['schemas']['Todo']
+export type Todo = components['schemas']['TodoResponse']
 export type TodoRequest = components['schemas']['TodoRequest']
+export type Project = components['schemas']['ProjectResponse']
+export type ProjectRequest = components['schemas']['ProjectRequest']
