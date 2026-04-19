@@ -22,6 +22,13 @@
             type="date"
             clearable
           />
+          <v-select
+            v-model="fields.priority"
+            label="優先度"
+            :items="priorityItems"
+            item-title="label"
+            item-value="value"
+          />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -46,8 +53,14 @@ const emit = defineEmits<{
   save: [fields: TodoRequest]
 }>()
 
+const priorityItems = [
+  { value: 'HIGH',   label: '高 (HIGH)' },
+  { value: 'MEDIUM', label: '中 (MEDIUM)' },
+  { value: 'LOW',    label: '低 (LOW)' },
+]
+
 const form = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null)
-const fields = ref<TodoRequest>({ title: '', description: '' })
+const fields = ref<TodoRequest>({ title: '', description: '', priority: 'MEDIUM' })
 const isEdit = computed(() => !!props.todo)
 
 const dialog = computed({
@@ -61,6 +74,7 @@ watch(() => props.modelValue, (open) => {
       title: props.todo?.title ?? '',
       description: props.todo?.description ?? '',
       dueDate: props.todo?.dueDate ?? undefined,
+      priority: props.todo?.priority ?? 'MEDIUM',
     }
   }
 })

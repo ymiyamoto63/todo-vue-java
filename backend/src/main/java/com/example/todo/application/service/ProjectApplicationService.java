@@ -2,6 +2,10 @@ package com.example.todo.application.service;
 
 import com.example.todo.domain.entity.Project;
 import com.example.todo.domain.repository.ProjectRepository;
+import com.example.todo.domain.specification.Specification;
+import com.example.todo.domain.specification.todo.CompletedTodoSpecification;
+import com.example.todo.domain.specification.todo.HighPriorityTodoSpecification;
+import com.example.todo.domain.specification.todo.OverdueTodoSpecification;
 import com.example.todo.domain.valueobject.DueDate;
 import com.example.todo.domain.valueobject.ProjectId;
 import com.example.todo.domain.valueobject.ProjectName;
@@ -12,6 +16,7 @@ import com.example.todo.dto.ProjectRequest;
 import com.example.todo.dto.ProjectResponse;
 import com.example.todo.dto.TodoRequest;
 import com.example.todo.dto.TodoResponse;
+import com.example.todo.domain.entity.Todo;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -59,10 +64,44 @@ public class ProjectApplicationService {
         var todo = project.addTodo(
                 new TodoTitle(request.getTitle()),
                 new TodoDescription(request.getDescription()),
-                dueDate
+                dueDate,
+                request.getPriority()
         );
         repository.save(project);
         return TodoResponse.from(todo);
+    }
+
+    /**
+     * Specificationパターンを使ってTodoをフィルタリングする。
+     * filter パラメータは "overdue", "completed", "high-priority" またはそれらをカンマ区切りで AND 結合する。
+     * 例: "overdue,high-priority" → 期限切れ かつ 優先度High のTodo
+     */
+    public List<TodoResponse> filterTodos(Long projectId, List<String> filters) {
+        Project project = findProjectById(projectId);
+
+        if (filters.isEmpty()) {
+            return project.getTodos().stream().map(TodoResponse::from).toList();
+        }
+
+        Specification<Todo> spec = buildSpecification(filters);
+        return project.filterTodos(spec).stream()
+                .map(TodoResponse::from)
+                .toList();
+    }
+
+    private Specification<Todo> buildSpecification(List<String> filters) {
+        Specification<Todo> spec = null;
+        for (String filter : filters) {
+            Specification<Todo> part = switch (filter.trim().toLowerCase()) {
+                case "overdue"       -> new OverdueTodoSpecification();
+                case "completed"     -> new CompletedTodoSpecification();
+                case "not-completed" -> new CompletedTodoSpecification().not();
+                case "high-priority" -> new HighPriorityTodoSpecification();
+                default -> throw new IllegalArgumentException("不明なフィルタ: " + filter);
+            };
+            spec = spec == null ? part : spec.and(part);
+        }
+        return spec;
     }
 
     public void removeTodo(Long projectId, Long todoId) {

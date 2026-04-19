@@ -1,6 +1,7 @@
 package com.example.todo.dto;
 
 import com.example.todo.domain.entity.Todo;
+import com.example.todo.domain.valueobject.Priority;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -20,6 +21,9 @@ public class TodoResponse {
     @Schema(description = "締め切り日", example = "2026-04-30")
     private LocalDate dueDate;
 
+    @Schema(description = "優先度", example = "HIGH")
+    private Priority priority;
+
     @Schema(description = "完了フラグ", example = "false")
     private boolean completed;
 
@@ -38,6 +42,7 @@ public class TodoResponse {
         response.title = todo.getTitle().getValue();
         response.description = todo.getDescription() != null ? todo.getDescription().getValue() : null;
         response.dueDate = todo.getDueDate() != null ? todo.getDueDate().getValue() : null;
+        response.priority = todo.getPriority();
         response.completed = todo.isCompleted();
         response.overdue = todo.isOverdue();
         response.createdAt = todo.getCreatedAt();
@@ -49,6 +54,7 @@ public class TodoResponse {
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public LocalDate getDueDate() { return dueDate; }
+    public Priority getPriority() { return priority; }
     public boolean isCompleted() { return completed; }
     public boolean isOverdue() { return overdue; }
     public LocalDateTime getCreatedAt() { return createdAt; }

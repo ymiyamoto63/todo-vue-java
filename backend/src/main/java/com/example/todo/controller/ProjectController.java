@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Tag(name = "Project", description = "プロジェクト管理API")
 @RestController
@@ -85,6 +86,24 @@ public class ProjectController {
             return ResponseEntity.noContent().build();
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(
+        summary = "TODOフィルタリング",
+        description = "Specificationパターンでフィルタリング。filter に overdue / completed / not-completed / high-priority をカンマ区切りで指定すると AND 結合"
+    )
+    @GetMapping("/{id}/todos")
+    public ResponseEntity<List<TodoResponse>> filterTodos(
+            @Parameter(description = "プロジェクトID") @PathVariable Long id,
+            @Parameter(description = "フィルタ条件(カンマ区切り)", example = "overdue,high-priority")
+            @RequestParam(required = false) List<String> filter) {
+        try {
+            return ResponseEntity.ok(service.filterTodos(id, Optional.ofNullable(filter).orElse(List.of())));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

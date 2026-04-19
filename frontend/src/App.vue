@@ -59,13 +59,19 @@
           <!-- 右ペイン: TODO一覧 -->
           <v-col cols="9" class="pa-4" style="overflow-y: auto;">
             <template v-if="selectedProject">
-              <div class="d-flex align-center mb-4">
+              <div class="d-flex align-center mb-4 flex-wrap gap-2">
                 <span class="text-h6">{{ selectedProject.name }}</span>
                 <v-spacer />
                 <v-btn-toggle v-model="filter" mandatory density="compact" class="mr-2">
-                  <v-btn value="all">すべて</v-btn>
-                  <v-btn value="active">未完了</v-btn>
-                  <v-btn value="done">完了</v-btn>
+                  <v-btn value="all" size="small">すべて</v-btn>
+                  <v-btn value="not-completed" size="small">未完了</v-btn>
+                  <v-btn value="completed" size="small">完了</v-btn>
+                  <v-btn value="overdue" size="small" color="error">
+                    <v-icon start size="small">mdi-alert-circle</v-icon>期限切れ
+                  </v-btn>
+                  <v-btn value="high-priority" size="small" color="deep-orange">
+                    <v-icon start size="small">mdi-fire</v-icon>優先High
+                  </v-btn>
                 </v-btn-toggle>
                 <v-btn icon="mdi-plus" color="primary" variant="tonal" size="small" @click="openAddTodo" />
               </div>
@@ -84,14 +90,23 @@
                     <v-list-item-title :class="{ 'text-decoration-line-through': todo.completed }">
                       {{ todo.title }}
                     </v-list-item-title>
-                    <v-list-item-subtitle>
+                    <v-list-item-subtitle class="d-flex align-center flex-wrap gap-1 mt-1">
                       <span v-if="todo.description">{{ todo.description }}</span>
+                      <!-- 優先度チップ -->
+                      <v-chip
+                        :color="priorityColor(todo.priority)"
+                        size="x-small"
+                        :prepend-icon="priorityIcon(todo.priority)"
+                        variant="tonal"
+                      >
+                        {{ priorityLabel(todo.priority) }}
+                      </v-chip>
+                      <!-- 締め切り日チップ -->
                       <v-chip
                         v-if="todo.dueDate"
                         :color="todo.overdue ? 'error' : 'default'"
                         size="x-small"
                         :prepend-icon="todo.overdue ? 'mdi-alert-circle' : 'mdi-calendar'"
-                        class="ml-1"
                         variant="tonal"
                       >
                         {{ todo.dueDate }}
@@ -152,6 +167,26 @@ const { projects, selectedProjectId, selectedProject, loading, filter, filteredT
 const projectDialog = ref(false)
 const todoDialog = ref(false)
 const snack = ref({ show: false, text: '', color: 'success' })
+
+type Priority = 'HIGH' | 'MEDIUM' | 'LOW' | undefined
+
+function priorityColor(p: Priority) {
+  if (p === 'HIGH') return 'deep-orange'
+  if (p === 'LOW') return 'blue-grey'
+  return 'primary'
+}
+
+function priorityIcon(p: Priority) {
+  if (p === 'HIGH') return 'mdi-fire'
+  if (p === 'LOW') return 'mdi-arrow-down'
+  return 'mdi-minus'
+}
+
+function priorityLabel(p: Priority) {
+  if (p === 'HIGH') return 'High'
+  if (p === 'LOW') return 'Low'
+  return 'Medium'
+}
 
 function openAddTodo() {
   todoDialog.value = true

@@ -1,5 +1,6 @@
 package com.example.todo.dto;
 
+import com.example.todo.domain.valueobject.Priority;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,6 +21,9 @@ public class TodoRequest {
     @Schema(description = "締め切り日", example = "2026-04-30")
     private LocalDate dueDate;
 
+    @Schema(description = "優先度", example = "HIGH", allowableValues = {"HIGH", "MEDIUM", "LOW"})
+    private Priority priority;
+
     @Schema(description = "完了フラグ", example = "false")
     private boolean completed;
 
@@ -31,6 +35,9 @@ public class TodoRequest {
 
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+
+    public Priority getPriority() { return priority; }
+    public void setPriority(Priority priority) { this.priority = priority; }
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }

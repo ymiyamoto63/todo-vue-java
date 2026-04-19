@@ -1,23 +1,38 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { projectApi } from '../api/projects'
-import type { Project, ProjectRequest, TodoRequest } from '../types/todo'
+import type { Project, ProjectRequest, Todo, TodoRequest } from '../types/todo'
+
+export type TodoFilter = 'all' | 'not-completed' | 'completed' | 'overdue' | 'high-priority'
+
+export const FILTER_OPTIONS: { value: TodoFilter; label: string }[] = [
+  { value: 'all',           label: 'すべて' },
+  { value: 'not-completed', label: '未完了' },
+  { value: 'completed',     label: '完了' },
+  { value: 'overdue',       label: '期限切れ' },
+  { value: 'high-priority', label: '優先High' },
+]
 
 export const useProjectStore = defineStore('project', () => {
   const projects = ref<Project[]>([])
   const selectedProjectId = ref<number | null>(null)
   const loading = ref(false)
-  const filter = ref<'all' | 'active' | 'done'>('all')
+  const filter = ref<TodoFilter>('all')
 
   const selectedProject = computed(() =>
     projects.value.find(p => p.id === selectedProjectId.value) ?? null
   )
 
-  const filteredTodos = computed(() => {
+  // クライアントサイドフィルタリング（todos の overdue/priority は backend が付与）
+  const filteredTodos = computed((): Todo[] => {
     const todos = selectedProject.value?.todos ?? []
-    if (filter.value === 'active') return todos.filter(t => !t.completed)
-    if (filter.value === 'done') return todos.filter(t => t.completed)
-    return todos
+    switch (filter.value) {
+      case 'not-completed': return todos.filter(t => !t.completed)
+      case 'completed':     return todos.filter(t => t.completed)
+      case 'overdue':       return todos.filter(t => !!t.overdue)
+      case 'high-priority': return todos.filter(t => t.priority === 'HIGH')
+      default:              return todos
+    }
   })
 
   async function fetchAll() {
@@ -34,6 +49,7 @@ export const useProjectStore = defineStore('project', () => {
     const { data } = await projectApi.create(fields)
     projects.value.unshift(data)
     selectedProjectId.value = data.id!
+    filter.value = 'all'
   }
 
   async function deleteProject(id: number) {

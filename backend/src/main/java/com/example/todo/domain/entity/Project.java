@@ -3,7 +3,9 @@ package com.example.todo.domain.entity;
 import com.example.todo.domain.event.AllTodosCompletedEvent;
 import com.example.todo.domain.event.DomainEvent;
 import com.example.todo.domain.event.TodoCompletedEvent;
+import com.example.todo.domain.specification.Specification;
 import com.example.todo.domain.valueobject.DueDate;
+import com.example.todo.domain.valueobject.Priority;
 import com.example.todo.domain.valueobject.ProjectId;
 import com.example.todo.domain.valueobject.ProjectName;
 import com.example.todo.domain.valueobject.TodoDescription;
@@ -41,10 +43,17 @@ public class Project {
     // --- ドメインロジック ---
 
     // Todo の追加は必ず Project を通す
-    public Todo addTodo(TodoTitle title, TodoDescription description, DueDate dueDate) {
-        Todo todo = new Todo(title, description, dueDate);
+    public Todo addTodo(TodoTitle title, TodoDescription description, DueDate dueDate, Priority priority) {
+        Todo todo = new Todo(title, description, dueDate, priority);
         todos.add(todo);
         return todo;
+    }
+
+    // Specificationパターンを使ってTodoをフィルタリングする
+    public List<Todo> filterTodos(Specification<Todo> spec) {
+        return todos.stream()
+                .filter(spec::isSatisfiedBy)
+                .toList();
     }
 
     public void removeTodo(TodoId todoId) {
