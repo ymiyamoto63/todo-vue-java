@@ -11,6 +11,7 @@ import com.example.todo.domain.valueobject.ProjectName;
 import com.example.todo.domain.valueobject.TodoDescription;
 import com.example.todo.domain.valueobject.TodoId;
 import com.example.todo.domain.valueobject.TodoTitle;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,20 +21,19 @@ import java.util.Objects;
 
 public class Project {
 
+    @Getter
     private ProjectId id;
+    @Getter
     private ProjectName name;
     private final List<Todo> todos;
 
-    // ドメインイベントを一時的に蓄積するリスト（永続化対象外）
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
-    // 新規作成用
     public Project(ProjectName name) {
         this.name = name;
         this.todos = new ArrayList<>();
     }
 
-    // Repository が復元するためのコンストラクタ
     public Project(ProjectId id, ProjectName name, List<Todo> todos) {
         this.id = id;
         this.name = name;
@@ -42,14 +42,12 @@ public class Project {
 
     // --- ドメインロジック ---
 
-    // Todo の追加は必ず Project を通す
     public Todo addTodo(TodoTitle title, TodoDescription description, DueDate dueDate, Priority priority) {
         Todo todo = new Todo(title, description, dueDate, priority);
         todos.add(todo);
         return todo;
     }
 
-    // Specificationパターンを使ってTodoをフィルタリングする
     public List<Todo> filterTodos(Specification<Todo> spec) {
         return todos.stream()
                 .filter(spec::isSatisfiedBy)
@@ -68,7 +66,6 @@ public class Project {
         todo.complete();
         domainEvents.add(new TodoCompletedEvent(id, todo.getId(), todo.getTitle()));
 
-        // 全Todoが完了したらプロジェクト完了イベントを発行
         if (!todos.isEmpty() && todos.stream().allMatch(Todo::isCompleted)) {
             domainEvents.add(new AllTodosCompletedEvent(id, name, todos.size()));
         }
@@ -83,7 +80,7 @@ public class Project {
         if (todo.isCompleted()) {
             todo.reopen();
         } else {
-            completeTodo(todoId); // イベント発行を含むcompleteTodoを使う
+            completeTodo(todoId);
         }
     }
 
@@ -91,7 +88,17 @@ public class Project {
         this.name = newName;
     }
 
-    // --- 同一性の比較（IDで判断）---
+    public void assignId(ProjectId id) { this.id = id; } // Repository専用
+
+    public List<Todo> getTodos() {
+        return Collections.unmodifiableList(todos);
+    }
+
+    public List<DomainEvent> pullDomainEvents() {
+        List<DomainEvent> events = new ArrayList<>(domainEvents);
+        domainEvents.clear();
+        return events;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -105,27 +112,6 @@ public class Project {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    // --- Getter ---
-
-    public ProjectId getId() { return id; }
-    public void assignId(ProjectId id) { this.id = id; } // Repository専用
-
-    public ProjectName getName() { return name; }
-
-    // 外部には読み取り専用リストを返す（内部リストを直接渡さない）
-    public List<Todo> getTodos() {
-        return Collections.unmodifiableList(todos);
-    }
-
-    // Application Service がイベントを取り出して発行する（取り出したらクリア）
-    public List<DomainEvent> pullDomainEvents() {
-        List<DomainEvent> events = new ArrayList<>(domainEvents);
-        domainEvents.clear();
-        return events;
-    }
-
-    // --- private ---
 
     private Todo findTodo(TodoId todoId) {
         return todos.stream()

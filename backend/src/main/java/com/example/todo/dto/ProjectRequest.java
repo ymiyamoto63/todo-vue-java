@@ -3,7 +3,9 @@ package com.example.todo.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 @Schema(description = "プロジェクト作成・更新リクエスト")
 public class ProjectRequest {
 
@@ -11,7 +13,4 @@ public class ProjectRequest {
     @NotBlank(message = "プロジェクト名は必須です")
     @Size(max = 100, message = "プロジェクト名は100文字以内で入力してください")
     private String name;
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 }

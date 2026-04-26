@@ -1,8 +1,12 @@
 package com.example.todo.domain.valueobject;
 
-import java.time.LocalDate;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+import java.time.LocalDate;
+
+@Getter
+@EqualsAndHashCode
 public final class DueDate {
 
     private final LocalDate value;
@@ -16,23 +20,6 @@ public final class DueDate {
 
     public boolean isOverdue() {
         return LocalDate.now().isAfter(value);
-    }
-
-    public LocalDate getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DueDate)) return false;
-        DueDate other = (DueDate) o;
-        return Objects.equals(value, other.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

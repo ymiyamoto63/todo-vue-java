@@ -1,7 +1,10 @@
 package com.example.todo.domain.valueobject;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
+@EqualsAndHashCode
 public final class TodoTitle {
 
     private static final int MAX_LENGTH = 200;
@@ -16,23 +19,6 @@ public final class TodoTitle {
             throw new IllegalArgumentException("タイトルは" + MAX_LENGTH + "文字以内で入力してください");
         }
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TodoTitle)) return false;
-        TodoTitle other = (TodoTitle) o;
-        return Objects.equals(value, other.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

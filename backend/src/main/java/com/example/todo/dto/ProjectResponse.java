@@ -2,9 +2,11 @@ package com.example.todo.dto;
 
 import com.example.todo.domain.entity.Project;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 @Schema(description = "プロジェクトレスポンス")
 public class ProjectResponse {
 
@@ -26,8 +28,4 @@ public class ProjectResponse {
                 .toList();
         return response;
     }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public List<TodoResponse> getTodos() { return todos; }
 }

@@ -55,7 +55,9 @@
       "Bash(./mvnw package *)",
       "Bash(/c/Windows/System32/taskkill.exe //F //IM java.exe)",
       "Bash(break sleep *)",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['components']['schemas']['TodoResponse'], indent=2\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['components']['schemas']['TodoResponse'], indent=2\\)\\)\")",
+      "Bash(mvn compile *)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

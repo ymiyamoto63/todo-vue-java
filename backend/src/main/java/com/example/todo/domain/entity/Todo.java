@@ -5,10 +5,12 @@ import com.example.todo.domain.valueobject.Priority;
 import com.example.todo.domain.valueobject.TodoDescription;
 import com.example.todo.domain.valueobject.TodoId;
 import com.example.todo.domain.valueobject.TodoTitle;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Getter
 public class Todo {
 
     private TodoId id;
@@ -20,7 +22,6 @@ public class Todo {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // 新規作成用（IDはまだない）
     public Todo(TodoTitle title, TodoDescription description, DueDate dueDate, Priority priority) {
         this.title = title;
         this.description = description;
@@ -31,7 +32,6 @@ public class Todo {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Repository が永続化済みデータを復元するためのコンストラクタ
     public Todo(TodoId id, TodoTitle title, TodoDescription description, DueDate dueDate,
                 Priority priority, boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -80,7 +80,9 @@ public class Todo {
         }
     }
 
-    // --- 同一性の比較（IDで判断）---
+    public boolean isOverdue() { return dueDate != null && !completed && dueDate.isOverdue(); }
+
+    public void assignId(TodoId id) { this.id = id; } // Repository専用
 
     @Override
     public boolean equals(Object o) {
@@ -94,18 +96,4 @@ public class Todo {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    // --- Getter のみ（setter は公開しない）---
-
-    public TodoId getId() { return id; }
-    public void assignId(TodoId id) { this.id = id; } // Repository専用
-
-    public TodoTitle getTitle() { return title; }
-    public TodoDescription getDescription() { return description; }
-    public DueDate getDueDate() { return dueDate; }
-    public Priority getPriority() { return priority; }
-    public boolean isCompleted() { return completed; }
-    public boolean isOverdue() { return dueDate != null && !completed && dueDate.isOverdue(); }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -3,10 +3,12 @@ package com.example.todo.dto;
 import com.example.todo.domain.entity.Todo;
 import com.example.todo.domain.valueobject.Priority;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
 @Schema(description = "TODOレスポンス")
 public class TodoResponse {
     @Schema(description = "ID", example = "1")
@@ -49,14 +51,4 @@ public class TodoResponse {
         response.updatedAt = todo.getUpdatedAt();
         return response;
     }
-
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public LocalDate getDueDate() { return dueDate; }
-    public Priority getPriority() { return priority; }
-    public boolean isCompleted() { return completed; }
-    public boolean isOverdue() { return overdue; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
